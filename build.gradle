@@ -88,6 +88,7 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
     mavenCentral()
+    maven { url = 'https://files.minecraftforge.net/maven' }
     maven {
         name = "chickenbones"
         url = "https://chickenbones.net/maven" //or https://maven.covers1624.net/
@@ -104,7 +105,7 @@ dependencies {
     compile fg.deobf("codechicken:CodeChickenLib:1.16.4-3.5.0.401:universal")
     compileOnly 'org.projectlombok:lombok:1.18.8'
     annotationProcessor 'org.projectlombok:lombok:1.18.8', project(':ElegantNetworkingAnnotationProcessor')
-    compile project(':ElegantNetworkingCommon')
+    compileOnly project(':ElegantNetworkingCommon')
     extraLibs project(':ElegantNetworkingCommon')
 
 }
@@ -114,7 +115,7 @@ jar {
     from {
         configurations.extraLibs.collect { it.isDirectory() ? it : zipTree(it) }
     }
-    //exclude('hohserg/elegant/networking/test/**')
+    exclude('hohserg/elegant/networking/test/**')
 
     manifest {
         attributes([
@@ -190,6 +191,12 @@ uploadArchives {
                         email = 'hohserg1@yandex.ru'
                     }
                 }
+            }
+
+            pom.whenConfigured {
+                p ->
+                    p.dependencies.get(0).version = "1.16.4-3.5.0.401"
+                    p.dependencies.get(0).classifier = "universal"
             }
         }
     }
