@@ -95,27 +95,19 @@ repositories {
     }
 }
 
-configurations {
-    extraLibs
-}
-
 dependencies {
     minecraft 'net.minecraftforge:forge:1.16.4-35.1.10'
 
     compile fg.deobf("codechicken:CodeChickenLib:1.16.4-3.5.0.401:universal")
     compileOnly 'org.projectlombok:lombok:1.18.8'
     annotationProcessor 'org.projectlombok:lombok:1.18.8', project(':ElegantNetworkingAnnotationProcessor')
-    compileOnly project(':ElegantNetworkingCommon')
-    extraLibs project(':ElegantNetworkingCommon')
-
+    compile project(':ElegantNetworkingCommon')
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..
 jar {
-    from {
-        configurations.extraLibs.collect { it.isDirectory() ? it : zipTree(it) }
-    }
-    exclude('hohserg/elegant/networking/test/**')
+    if (!testBuild)
+        exclude('hohserg/elegant/networking/test/**')
 
     manifest {
         attributes([
@@ -192,11 +184,8 @@ uploadArchives {
                     }
                 }
             }
-
             pom.whenConfigured {
-                p ->
-                    p.dependencies.get(0).version = "1.16.4-3.5.0.401"
-                    p.dependencies.get(0).classifier = "universal"
+                p -> p.dependencies=[]
             }
         }
     }
