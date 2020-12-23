@@ -92,7 +92,10 @@ public class ForgeNetworkImpl implements Network<ForgeNetworkImpl.UniversalPacke
                     packetRepr.fromBytes(packetBuffer, channel);
                     return packetRepr;
                 },
-                (serverToClientUniversalPacket, contextSupplier) -> onReceiveClient(serverToClientUniversalPacket, channel));
+                (serverToClientUniversalPacket, contextSupplier) -> {
+                    contextSupplier.get().enqueueWork(() -> onReceiveClient(serverToClientUniversalPacket, channel));
+                    contextSupplier.get().setPacketHandled(true);
+                });
 
         simpleNetworkWrapper.registerMessage(1, ClientToServerUniversalPacket.class,
                 UniversalPacket::toBytes,
@@ -101,7 +104,10 @@ public class ForgeNetworkImpl implements Network<ForgeNetworkImpl.UniversalPacke
                     packetRepr.fromBytes(packetBuffer, channel);
                     return packetRepr;
                 },
-                (clientToServerUniversalPacket, contextSupplier) -> onReceiveServer(clientToServerUniversalPacket, contextSupplier.get().getSender(), channel));
+                (clientToServerUniversalPacket, contextSupplier) -> {
+                    contextSupplier.get().enqueueWork(() -> onReceiveServer(clientToServerUniversalPacket, contextSupplier.get().getSender(), channel));
+                    contextSupplier.get().setPacketHandled(true);
+                });
     }
 
     @NoArgsConstructor
