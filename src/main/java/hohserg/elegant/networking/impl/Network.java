@@ -4,8 +4,16 @@ import hohserg.elegant.networking.api.ClientToServerPacket;
 import hohserg.elegant.networking.api.ServerToClientPacket;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.ModList;
 
 public interface Network<PacketRepresentation> {
+
+    Network defaultImpl = ModList.get().isLoaded("codechickenlib") ? new CCLNetworkImpl() : new ForgeNetworkImpl();
+
+    static Network getNetwork() {
+        return defaultImpl;
+    }
+
     void sendToPlayer(ServerToClientPacket serverToClientPacket, ServerPlayerEntity player);
 
     void sendToClients(ServerToClientPacket serverToClientPacket);

@@ -1,6 +1,6 @@
 package hohserg.elegant.networking.api;
 
-import hohserg.elegant.networking.impl.ElegantNetworking;
+import hohserg.elegant.networking.impl.Network;
 import net.minecraft.entity.player.ServerPlayerEntity;
 
 /**
@@ -18,6 +18,6 @@ public interface ClientToServerPacket extends IByteBufSerializable {
      * Use it for send packet instance to server
      */
     default void sendToServer() {
-        ElegantNetworking.getNetwork().sendToServer(this);
+        Network.getNetwork().sendToServer(this);
     }
 }
