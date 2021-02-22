@@ -45,6 +45,8 @@ public class CCLNetworkImpl implements Network<PacketCustom> {
     }
 
     private PacketCustom preparePacket(IByteBufSerializable packet) {
+        checkSendingSide(packet);
+
         String packetClassName = packet.getClass().getName();
         ISerializerBase<IByteBufSerializable> serializer = Registry.getSerializer(packetClassName);
         String channel = Registry.getChannelForPacket(packetClassName);

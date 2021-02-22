@@ -1,10 +1,13 @@
 package hohserg.elegant.networking.impl;
 
 import hohserg.elegant.networking.api.ClientToServerPacket;
+import hohserg.elegant.networking.api.IByteBufSerializable;
 import hohserg.elegant.networking.api.ServerToClientPacket;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 
 public interface Network<PacketRepresentation> {
 
@@ -31,5 +34,15 @@ public interface Network<PacketRepresentation> {
     void onReceiveServer(PacketRepresentation packetRepresent, ServerPlayerEntity player, String channel);
 
     void registerChannel(String channel);
+
+    default void checkSendingSide(IByteBufSerializable packet) {
+        Dist side = FMLEnvironment.dist;
+
+        if (side == Dist.CLIENT && packet instanceof ServerToClientPacket)
+            throw new RuntimeException("Attempt to send ServerToClientPacket from client side");
+        else if (side == Dist.DEDICATED_SERVER && packet instanceof ClientToServerPacket)
+            throw new RuntimeException("Attempt to send ClientToServerPacket from server side");
+    }
+
 
 }
