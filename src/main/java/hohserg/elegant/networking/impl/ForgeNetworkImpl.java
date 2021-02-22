@@ -53,11 +53,11 @@ public class ForgeNetworkImpl implements Network<ForgeNetworkImpl.UniversalPacke
     }
 
     private ServerToClientUniversalPacket preparePacket(ServerToClientPacket packet) {
-        return new ServerToClientUniversalPacket(ElegantNetworking.getPacketId(packet.getClass().getName()), packet);
+        return new ServerToClientUniversalPacket(Registry.getPacketId(packet.getClass().getName()), packet);
     }
 
     private ClientToServerUniversalPacket preparePacket(ClientToServerPacket packet) {
-        return new ClientToServerUniversalPacket(ElegantNetworking.getPacketId(packet.getClass().getName()), packet);
+        return new ClientToServerUniversalPacket(Registry.getPacketId(packet.getClass().getName()), packet);
     }
 
     @Override
@@ -134,13 +134,13 @@ public class ForgeNetworkImpl implements Network<ForgeNetworkImpl.UniversalPacke
 
         void fromBytes(ByteBuf buf, String channel) {
             id = buf.readByte();
-            String packetName = ElegantNetworking.getPacketName(channel, id);
-            packet = (A) ElegantNetworking.getSerializer(packetName).unserialize(buf);
+            String packetName = Registry.getPacketName(channel, id);
+            packet = (A) Registry.getSerializer(packetName).unserialize(buf);
         }
 
         void toBytes(ByteBuf buf) {
             buf.writeByte(id);
-            ElegantNetworking.getSerializer(packet.getClass().getName()).serialize(packet, buf);
+            Registry.getSerializer(packet.getClass().getName()).serialize(packet, buf);
         }
     }
 }
