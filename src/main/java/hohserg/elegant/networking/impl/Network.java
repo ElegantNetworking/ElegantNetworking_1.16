@@ -39,9 +39,9 @@ public interface Network<PacketRepresentation> {
         Dist side = FMLEnvironment.dist;
 
         if (side == Dist.CLIENT && packet instanceof ServerToClientPacket)
-            throw new RuntimeException("Attempt to send ServerToClientPacket from client side");
+            throw new RuntimeException("Attempt to send ServerToClientPacket from client side: " + packet.getClass().getCanonicalName());
         else if (side == Dist.DEDICATED_SERVER && packet instanceof ClientToServerPacket)
-            throw new RuntimeException("Attempt to send ClientToServerPacket from server side");
+            throw new RuntimeException("Attempt to send ClientToServerPacket from server side: " + packet.getClass().getCanonicalName());
     }
 
 
