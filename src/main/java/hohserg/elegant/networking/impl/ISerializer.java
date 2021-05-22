@@ -24,8 +24,6 @@ public interface ISerializer<Packet> extends ISerializerBase<Packet> {
 
     Packet unserialize(ByteBuf buf);
 
-    int packetId();
-
     default void serialize_CompoundNBT_Generic(CompoundNBT value, ByteBuf acc) {
         if (value != null)
             try {
