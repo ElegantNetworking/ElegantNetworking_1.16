@@ -116,9 +116,11 @@ jar {
     from {
         configurations.extraLibs.collect { it.isDirectory() ? it : zipTree(it) }
     }
-    if (!testBuild)
+    if (!testBuild) {
         exclude('hohserg/elegant/networking/test/**')
-
+        exclude('META-INF/services/**')
+        exclude('tmp_generated/**')
+    }
     manifest {
         attributes([
                 "Specification-Title"     : "elegant_networking",
