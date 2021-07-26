@@ -6,7 +6,9 @@ import hohserg.elegant.networking.api.ServerToClientPacket;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.common.thread.EffectiveSide;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 
 public interface Network<PacketRepresentation> {
@@ -36,11 +38,11 @@ public interface Network<PacketRepresentation> {
     void registerChannel(String channel);
 
     default void checkSendingSide(IByteBufSerializable packet) {
-        Dist side = FMLEnvironment.dist;
+        LogicalSide side = EffectiveSide.get();
 
-        if (side == Dist.CLIENT && packet instanceof ServerToClientPacket)
+        if (side == LogicalSide.CLIENT && packet instanceof ServerToClientPacket)
             throw new RuntimeException("Attempt to send ServerToClientPacket from client side: " + packet.getClass().getCanonicalName());
-        else if (side == Dist.DEDICATED_SERVER && packet instanceof ClientToServerPacket)
+        else if (side == LogicalSide.SERVER && packet instanceof ClientToServerPacket)
             throw new RuntimeException("Attempt to send ClientToServerPacket from server side: " + packet.getClass().getCanonicalName());
     }
 
