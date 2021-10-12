@@ -13,7 +13,10 @@ import net.minecraftforge.fml.loading.FMLEnvironment;
 
 public interface Network<PacketRepresentation> {
 
-    Network defaultImpl = ModList.get().isLoaded("codechickenlib") ? new CCLNetworkImpl() : new ForgeNetworkImpl();
+    Network defaultImpl =
+            Main.config.getBackgroundPacketSystem() == Config.BackgroundPacketSystem.CCLImpl && ModList.get().isLoaded("codechickenlib") ?
+                    new CCLNetworkImpl() :
+                    new ForgeNetworkImpl();
 
     static Network getNetwork() {
         return defaultImpl;
