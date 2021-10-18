@@ -22,17 +22,17 @@ public interface Network<PacketRepresentation> {
         return defaultImpl;
     }
 
-    void sendToPlayer(ServerToClientPacket serverToClientPacket, ServerPlayerEntity player);
+    void sendToPlayer(ServerToClientPacket packet, ServerPlayerEntity player);
 
-    void sendToClients(ServerToClientPacket serverToClientPacket);
+    void sendToClients(ServerToClientPacket packet);
 
-    void sendPacketToAllAround(ServerToClientPacket serverToClientPacket, World world, double x, double y, double z, double range);
+    void sendPacketToAllAround(ServerToClientPacket packet, World world, double x, double y, double z, double range);
 
-    void sendToDimension(ServerToClientPacket serverToClientPacket, World world);
+    void sendToDimension(ServerToClientPacket packet, World world);
 
-    void sendToChunk(ServerToClientPacket serverToClientPacket, World world, int chunkX, int chunkZ);
+    void sendToChunk(ServerToClientPacket packet, World world, int chunkX, int chunkZ);
 
-    void sendToServer(ClientToServerPacket clientToServerPacket);
+    void sendToServer(ClientToServerPacket packet);
 
     void onReceiveClient(PacketRepresentation packetRepresent, String channel);
 
@@ -40,12 +40,13 @@ public interface Network<PacketRepresentation> {
 
     void registerChannel(String channel);
 
-    default void checkSendingSide(IByteBufSerializable packet) {
-        LogicalSide side = EffectiveSide.get();
-
-        if (side == LogicalSide.CLIENT && packet instanceof ServerToClientPacket)
+    default void checkSendingSide(ServerToClientPacket packet) {
+        if (EffectiveSide.get() == LogicalSide.CLIENT)
             throw new RuntimeException("Attempt to send ServerToClientPacket from client side: " + packet.getClass().getCanonicalName());
-        else if (side == LogicalSide.SERVER && packet instanceof ClientToServerPacket)
+    }
+
+    default void checkSendingSide(ClientToServerPacket packet) {
+        if (EffectiveSide.get() == LogicalSide.SERVER)
             throw new RuntimeException("Attempt to send ClientToServerPacket from server side: " + packet.getClass().getCanonicalName());
     }
 
