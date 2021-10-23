@@ -17,6 +17,6 @@ public class Main {
 
     @SubscribeEvent
     public static void onCommonSetup(FMLCommonSetupEvent event) {
-        Init.initPackets(log::info, Network.getNetwork()::registerChannel);
+        Init.initPackets(log::info, log::warn, Network.getNetwork()::registerChannel);
     }
 }
