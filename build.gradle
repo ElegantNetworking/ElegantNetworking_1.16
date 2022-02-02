@@ -1,17 +1,16 @@
 buildscript {
     repositories {
-        maven { url = 'https://files.minecraftforge.net/maven' }
+        maven { url = 'https://maven.minecraftforge.net/' }
         jcenter()
         mavenCentral()
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '4.1.+', changing: true
+        classpath 'net.minecraftforge.gradle:ForgeGradle:5.1.27'
     }
 }
 apply plugin: 'net.minecraftforge.gradle'
-// Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 apply plugin: 'eclipse'
-apply plugin: 'maven'
+apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
 version = modVersion
@@ -98,7 +97,7 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
     mavenCentral()
-    maven { url = 'https://files.minecraftforge.net/maven' }
+    maven { url = 'https://maven.minecraftforge.net/' }
     maven {
         name = "chickenbones"
         url = "https://chickenbones.net/maven" //or https://maven.covers1624.net/
@@ -112,10 +111,10 @@ configurations {
 dependencies {
     minecraft 'net.minecraftforge:forge:1.16.4-35.1.10'
 
-    compile fg.deobf("codechicken:CodeChickenLib:1.16.4-3.5.0.401:universal")
+    implementation fg.deobf("codechicken:CodeChickenLib:1.16.4-3.5.0.401:universal")
 
-    compile(project(':ElegantNetworkingCommon')) { transitive = false }
-    extraLibs project(':ElegantNetworkingCommon')
+    implementation(project(':_ElegantNetworkingCommon')) { transitive = false }
+    extraLibs project(':_ElegantNetworkingCommon')
     
     compileOnly 'org.projectlombok:lombok:1.18.8'
     annotationProcessor 'org.projectlombok:lombok:1.18.8', project(':ElegantNetworkingAnnotationProcessor')
@@ -162,40 +161,51 @@ artifacts {
     archives javadocJar
 }
 
-signing {
-    required { project.hasProperty("signing.keyId") }
-    sign configurations.archives
-}
-
-uploadArchives {
+publishing {
     repositories {
-        mavenDeployer {
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+        maven {
+            def localRepo = new File(project.getProjectDir(), 'repo')
+            localRepo.deleteDir()
 
             def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
             def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
-            repository(url: releasesRepoUrl/*'file://localhost/' + new File(project.getProjectDir(),'repo').getAbsolutePath()*/) {
-                if (project.hasProperty("ossrhUsername"))
-                    authentication userName: "$ossrhUsername", password: "$ossrhPassword"
-            }
+            def localRepoUrl = localRepo.getAbsolutePath()
 
-            pom.artifactId = 'elegant-networking-1.16'
-            pom.project {
-                name 'ElegantNetworking MinecraftForge 1.16 library'
-                packaging 'jar'
-                description 'This is a runtime library of ElegantNetworking for MinecraftForge 1.16'
-                url 'https://github.com/ElegantNetworking/ElegantNetworkingRoot'
+            def usedLocation = releasesRepoUrl
+            url = usedLocation
+
+            if (usedLocation != localRepoUrl && project.hasProperty("ossrhUsername")) {
+                credentials {
+                    username = "$ossrhUsername"
+                    password = "$ossrhPassword"
+                }
+            }
+        }
+    }
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId 'elegant-networking-1.7.10'
+            from components.java
+
+            artifact sourcesJar
+            artifact javadocJar
+
+            pom {
+                name = 'ElegantNetworking MinecraftForge 1.12 library'
+                packaging = 'jar'
+                description = 'This is a runtime library of ElegantNetworking for MinecraftForge 1.12'
+                url = 'https://github.com/ElegantNetworking/ElegantNetworkingRoot'
 
                 scm {
-                    connection = 'scm:git:https://github.com/ElegantNetworking/ElegantNetworking_1.16.git'
-                    developerConnection = 'scm:git:git@github.com:https://github.com/ElegantNetworking/ElegantNetworking_1.16.git'
-                    url = 'https://github.com/ElegantNetworking/ElegantNetworking_1.16'
+                    connection = 'scm:git:https://github.com/ElegantNetworking/ElegantNetworking_1.12.git'
+                    developerConnection = 'scm:git:git@github.com:https://github.com/ElegantNetworking/ElegantNetworking_1.12.git'
+                    url = 'https://github.com/ElegantNetworking/ElegantNetworking_1.12'
                 }
 
                 licenses {
                     license {
                         name = 'GNU Lesser General Public License v3.0'
-                        url = 'https://raw.githubusercontent.com/ElegantNetworking/ElegantNetworking_1.16/master/LICENSE.md'
+                        url = 'https://raw.githubusercontent.com/ElegantNetworking/ElegantNetworking_1.12/master/LICENSE.md'
                     }
                 }
 
@@ -207,9 +217,11 @@ uploadArchives {
                     }
                 }
             }
-            pom.whenConfigured {
-                p -> p.dependencies=[]
-            }
         }
     }
+}
+
+signing {
+    required { project.hasProperty("signing.keyId") }
+    sign publishing.publications.mavenJava
 }
