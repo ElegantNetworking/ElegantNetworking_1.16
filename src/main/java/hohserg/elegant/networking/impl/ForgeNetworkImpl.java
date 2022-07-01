@@ -59,11 +59,11 @@ public class ForgeNetworkImpl implements Network<ForgeNetworkImpl.UniversalPacke
     }
 
     private ServerToClientUniversalPacket preparePacket(ServerToClientPacket packet) {
-        return new ServerToClientUniversalPacket(Registry.getPacketId(packet.getClass().getName()), packet);
+        return new ServerToClientUniversalPacket(Registry.getPacketId(packet.getClass()), packet);
     }
 
     private ClientToServerUniversalPacket preparePacket(ClientToServerPacket packet) {
-        return new ClientToServerUniversalPacket(Registry.getPacketId(packet.getClass().getName()), packet);
+        return new ClientToServerUniversalPacket(Registry.getPacketId(packet.getClass()), packet);
     }
 
     @Override

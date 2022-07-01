@@ -54,7 +54,7 @@ public class CCLNetworkImpl implements Network<PacketCustom> {
         String packetClassName = packet.getClass().getName();
         ISerializerBase<IByteBufSerializable> serializer = Registry.getSerializer(packetClassName);
         String channel = Registry.getChannelForPacket(packetClassName);
-        Integer id = Registry.getPacketId(packetClassName);
+        int id = Registry.getPacketId(packet.getClass());
         PacketCustom packetCustom = new PacketCustom(new ResourceLocation(channel, channel), id);
 
         ByteBuf buffer = Unpooled.buffer();
