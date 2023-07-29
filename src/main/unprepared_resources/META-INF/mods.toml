@@ -10,7 +10,7 @@ issueTrackerURL="https://github.com/ElegantNetworking/ElegantNetworking_1.16/iss
 
 modId="elegant_networking"
 
-version="${version}"
+version="${mod_version}"
  
 displayName="ElegantNetworking"
 
